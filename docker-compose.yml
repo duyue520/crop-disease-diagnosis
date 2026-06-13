@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  disease-api:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: crop-disease-api
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=change-this-to-a-random-string-in-production
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./weights:/app/weights:ro
+      - ./outputs:/app/outputs
+      - disease_data:/app/server  # 数据库持久化
+    restart: unless-stopped
+
+volumes:
+  disease_data:

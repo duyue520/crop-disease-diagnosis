@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# 模型权重 (太大)
+weights/*.pth
+weights/*.pt
+weights/hub/
+
+# 数据库
+server/app.db
+*.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# 环境
+venv/
+.venv/
+
+# 系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 临时文件
+*.log
+*.tmp
+cloudflared.exe
+dist/
+node_modules/
+
+# 数据集
+Plant_leave_diseases_dataset_without_augmentation/
