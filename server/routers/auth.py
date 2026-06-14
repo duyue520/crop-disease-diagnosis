@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 
 from ..database import get_db
-from ..models.db_models import User
+from ..models.db_models import User, DiagnosisRecord
 from ..schemas.schemas import UserRegister, UserLogin, Token, UserInfo
 from ..services.auth_service import hash_password, verify_password, create_access_token, get_current_user
 
@@ -50,8 +50,10 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
 def login(data: UserLogin, db: Session = Depends(get_db)):
     """用户登录"""
     user = db.query(User).filter(User.username == data.username).first()
-    if not user or not verify_password(data.password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="用户名或密码错误")
+    if not user:
+        raise HTTPException(status_code=401, detail="用户名不存在，请先注册")
+    if not verify_password(data.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="密码错误，请重试")
 
     token = create_access_token(user.id, user.username)
     return Token(access_token=token, username=user.username)
@@ -94,6 +96,37 @@ def get_diagnosis_history(
             for r in records
         ],
     }
+
+
+@router.delete("/history/{record_id}")
+def delete_history_record(
+    record_id: int,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """删除单条诊断记录"""
+    record = db.query(DiagnosisRecord).filter(
+        DiagnosisRecord.id == record_id,
+        DiagnosisRecord.user_id == user.id,
+    ).first()
+    if not record:
+        raise HTTPException(status_code=404, detail="记录不存在")
+    db.delete(record)
+    db.commit()
+    return {"success": True, "message": "已删除"}
+
+
+@router.delete("/history")
+def delete_all_history(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """删除全部诊断历史"""
+    count = db.query(DiagnosisRecord).filter(
+        DiagnosisRecord.user_id == user.id,
+    ).delete()
+    db.commit()
+    return {"success": True, "message": f"已删除 {count} 条记录"}
 
 
 @router.get("/profile")

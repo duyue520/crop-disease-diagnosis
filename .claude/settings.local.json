@@ -57,7 +57,14 @@
       "Bash(curl -v -X POST http://localhost:8000/api/feedback -H 'Content-Type: application/json' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwidXNlcm5hbWUiOiJ0ZXN0X2RlbW8iLCJleHAiOjE3ODE5NDI4MzF9.RD0FPRG2xqmXggKFYE_MnT9OYr1IMWReNE2BL6-Fsj0' -d '{\"category\":\"suggestion\",\"title\":\"test\",\"content\":\"hello\"}')",
       "Bash(start https://latter-valium-calgary-offset.trycloudflare.com)",
       "Bash(curl -s -X POST http://localhost:8000/api/feedback -H 'Content-Type: application/json' -d '{\"category\":\"suggestion\",\"title\":\"test\",\"content\":\"hello world\"}')",
-      "Bash(curl -s -X POST https://ethnic-targeted-finding-wishes.trycloudflare.com/api/feedback -H 'Content-Type: application/json' -d '{\"category\":\"suggestion\",\"title\":\"test\",\"content\":\"hello world\"}')"
+      "Bash(curl -s -X POST https://ethnic-targeted-finding-wishes.trycloudflare.com/api/feedback -H 'Content-Type: application/json' -d '{\"category\":\"suggestion\",\"title\":\"test\",\"content\":\"hello world\"}')",
+      "Bash(curl -w \"DNS: %{time_namelookup}s | 连接: %{time_connect}s | TTFB: %{time_starttransfer}s | 总耗时: %{time_total}s | 大小: %{size_download} bytes\\\\n\" -s -o /dev/null http://119.91.113.191)",
+      "Bash(curl -s -H \"Accept-Encoding: gzip\" -o /dev/null -w \"JS压缩: %{size_download}B\\\\n\" http://119.91.113.191/assets/vendor-DkPV9v0L.js)",
+      "Bash(curl -s -H \"Accept-Encoding: gzip\" -o /dev/null -w \"CSS压缩: %{size_download}B\\\\n\" http://119.91.113.191/assets/index-D7B72C-T.css)",
+      "Bash(grep \"\\\\\\\\?\\\\.\\\\\\\\[\" \"f:/github好看网站/leleo-home-page-main/src/app.js\")",
+      "Bash(curl -w \"速度: %{speed_download} B/s | 总耗时: %{time_total}s | 大小: %{size_download}B\\\\n\" -s -o /dev/null \"http://119.91.113.191/assets/index-\"*.js)",
+      "Bash(ls -la \"F:/poetize-master\")",
+      "Read(//f/poetize-master/**)"
     ]
   }
 }

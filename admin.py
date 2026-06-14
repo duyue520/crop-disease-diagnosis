@@ -97,6 +97,7 @@ def interactive():
         print(" 1. 查看所有用户")
         print(" 2. 重置用户密码")
         print(" 3. 查看反馈")
+        print(" 4. 清空留言板")
         print(" 4. 回复反馈")
         print(" 0. 退出")
         print("=" * 40)
@@ -111,6 +112,14 @@ def interactive():
                 reset_password(uname, pwd)
         elif choice == '3':
             show_feedback()
+        elif choice == '4':
+            from server.routers.guestbook import GuestbookMessage
+            db = SessionLocal()
+            c = db.query(GuestbookMessage).count()
+            db.query(GuestbookMessage).delete()
+            db.commit()
+            print(f" ✅ 已清空 {c} 条留言")
+            db.close()
         elif choice == '4':
             show_feedback()
             fid = input(" 输入要回复的反馈ID: ").strip()

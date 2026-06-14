@@ -17,7 +17,8 @@ router = APIRouter(prefix="/api/guestbook", tags=["留言板"])
 class GuestbookMessage(Base):
     __tablename__ = "guestbook_messages"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, nullable=True)  # 登录用户ID，匿名则为null
+    user_id = Column(Integer, nullable=True)
+    owner_name = Column(String(50), nullable=True)  # 发帖用户名（user_id变了也能识别）
     nickname = Column(String(50), nullable=False)
     content = Column(Text, nullable=False)
     deleted = Column(Boolean, default=False)
@@ -45,6 +46,7 @@ def list_messages(skip: int = 0, limit: int = 50, db: Session = Depends(get_db))
             {
                 "id": m.id,
                 "user_id": m.user_id,
+                "owner_name": m.owner_name,
                 "nickname": m.nickname,
                 "content": m.content,
                 "created_at": m.created_at.strftime("%m-%d %H:%M"),
@@ -74,6 +76,7 @@ def create_message(
 
     msg = GuestbookMessage(
         user_id=user.id,
+        owner_name=user.username,
         nickname="匿名",
         content=data.content,
     )
@@ -86,6 +89,7 @@ def create_message(
         "data": {
             "id": msg.id,
             "user_id": msg.user_id,
+            "owner_name": msg.owner_name,
             "nickname": msg.nickname,
             "content": msg.content,
             "created_at": msg.created_at.strftime("%m-%d %H:%M"),
@@ -115,7 +119,8 @@ def delete_message(
     msg = db.query(GuestbookMessage).filter(GuestbookMessage.id == message_id).first()
     if not msg:
         raise HTTPException(status_code=404, detail="留言不存在")
-    if msg.user_id != uid:
+    # 用用户名判断（user_id会在数据库重置后变化）
+    if msg.user_id != uid and msg.owner_name != user.username:
         raise HTTPException(status_code=403, detail="只能删除自己的留言")
 
     msg.deleted = True

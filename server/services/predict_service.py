@@ -55,15 +55,16 @@ def _get_model(model_name='resnet18', num_classes=39, pretrained=False):
 _model = None
 _device = None
 _class_names = None
+_onnx_session = None  # ONNX Runtime 加速
 
 
 def get_device():
-    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    return torch.device("cpu")  # RTX 5070 Ti 暂未支持，用CPU
 
 
 def load_model():
     """延迟加载模型（首次调用时加载）"""
-    global _model, _device, _class_names
+    global _model, _device, _class_names, _onnx_session
     if _model is None:
         _device = get_device()
         _model = _get_model(MODEL_NAME, NUM_CLASSES, pretrained=False)
@@ -73,6 +74,14 @@ def load_model():
         _model.load_state_dict(state)
         _model.to(_device)
         _model.eval()
+        # 尝试加载 ONNX 加速模型
+        onnx_path = MODEL_PATH.replace('.pth', '.onnx')
+        if os.path.exists(onnx_path):
+            try:
+                import onnxruntime as ort
+                _onnx_session = ort.InferenceSession(onnx_path, providers=['CPUExecutionProvider'])
+                print(f" [OK] ONNX 加速已启用 ({_device})")
+            except: pass
         print(f" [OK] 模型已加载到 {_device}")
     return _model, _device
 
@@ -113,12 +122,19 @@ def predict(image_bytes: bytes, top_k: int = 3, enable_gradcam: bool = False) ->
     original_img = img.copy()
     input_tensor = transform(img).unsqueeze(0).to(device)
 
-    # 推理
+    # 推理（优先用 ONNX Runtime 加速）
+    global _onnx_session
     start = time.time()
-    with torch.no_grad():
-        output = model(input_tensor)
-        probs = F.softmax(output, dim=1)
-        top_probs, top_indices = torch.topk(probs, top_k, dim=1)
+    if _onnx_session is not None:
+        import numpy as np
+        inp = input_tensor.numpy().astype(np.float32)
+        out = _onnx_session.run(None, {'input': inp})[0]
+        output = torch.from_numpy(out)
+    else:
+        with torch.no_grad():
+            output = model(input_tensor)
+    probs = F.softmax(output, dim=1)
+    top_probs, top_indices = torch.topk(probs, top_k, dim=1)
 
     inference_time = (time.time() - start) * 1000
 

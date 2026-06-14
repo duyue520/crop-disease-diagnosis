@@ -1,146 +1,98 @@
 # 🌿 多作物叶片病害智能诊断系统
 
-基于 **PyTorch + ResNet/EfficientNet 迁移学习** 的农作物叶片病害识别系统,支持 **5种作物 17类病害/健康** 的智能诊断。
+> AI 作物病害诊断 + 博客 + 音乐播放 + 个人网站
 
-## 📌 项目简介
+## ✨ 功能
 
-本项目实现了从数据预处理、模型训练、评估到推理部署的完整深度学习图像分类 pipeline，适合作为机器视觉 / AI 应用岗位的面试作品。
-
-### 核心能力展示
-
-- ✅ **迁移学习**：基于 ImageNet 预训练权重微调 ResNet18/50、EfficientNet
-- ✅ **数据处理**：处理嵌套目录结构、类别不均衡（WeightedRandomSampler）、数据增强
-- ✅ **模型训练**：完整训练循环 + 学习率调度 + 早停防过拟合
-- ✅ **评估分析**：混淆矩阵、Precision/Recall/F1、Top-K 准确率、易混淆类别分析
-- ✅ **推理部署**：单张图片快速推理，输出 Top-3 诊断结果和置信度
-
-## 📂 项目结构
-
-```
-crop_disease_diagnosis/
-├── config/                  # 配置模块
-│   └── config.py            # 所有超参数和路径集中管理
-├── data/                    # 数据模块
-│   └── dataset.py           # 自定义 Dataset + 数据增强 + 数据分析
-├── models/                  # 模型模块
-│   └── model.py             # 模型工厂 (ResNet18/34/50, EfficientNet)
-├── utils/                   # 工具模块
-│   ├── train_utils.py       # 训练/验证循环 + 早停
-│   └── plot_utils.py        # 混淆矩阵 + 训练曲线 + 分类报告
-├── train.py                 # ★ 训练主脚本
-├── eval.py                  # ★ 模型评估脚本
-├── inference.py             # ★ 单张图片推理脚本
-├── demo/                    # 测试样例图片
-├── weights/                 # 模型权重目录
-│   └── README.md            # 权重获取说明
-├── outputs/                 # 输出目录（训练结果、图表）
-├── requirements.txt         # 依赖包列表
-├── .gitignore               # Git 忽略规则
-└── README.md                # 本文件
-```
-
-## 🚀 快速开始
-
-### 1. 环境安装
-
-```bash
-# 安装依赖
-pip install -r requirements.txt
-```
-
-### 2. 准备数据集
-
-下载 PlantVillage 多作物病害数据集，按以下结构放置：
-
-```
-E:\project_data\PlantVillage\Crop Diseases Dataset\Crop Diseases\Crop___Disease\
-├── Corn/
-│   ├── Corn___Common_Rust/      (1192张)
-│   ├── Corn___Gray_Leaf_Spot/   (513张)
-│   ├── Corn___Healthy/          (1162张)
-│   └── Corn___Northern_Leaf_Blight/ (985张)
-├── Potato/
-│   ├── Potato___Early_Blight/   (1000张)
-│   ├── Potato___Healthy/        (152张)
-│   └── Potato___Late_Blight/    (1000张)
-├── Rice/
-│   ├── Rice___Brown_Spot/       (613张)
-│   ├── Rice___Healthy/          (1488张)
-│   ├── Rice___Leaf_Blast/       (977张)
-│   └── Rice___Neck_Blast/       (1000张)
-├── Wheat/
-│   ├── Wheat___Brown_Rust/      (902张)
-│   ├── Wheat___Healthy/         (1116张)
-│   └── Wheat___Yellow_Rust/     (924张)
-└── sugarcane/
-    ├── Bacterial Blight/        (100张)
-    ├── Healthy/                 (100张)
-    └── Red Rot/                 (100张)
-```
-
-> 数据集路径在 `config/config.py` 中的 `DATASET_ROOT` 修改
-
-### 3. 训练模型
-
-```bash
-python train.py
-```
-
-训练过程会：
-- 自动分析数据分布并保存图表
-- 每轮输出 train/val 的 loss 和 accuracy
-- 验证 loss 持续不降时自动早停
-- 保存最佳模型到 `weights/best_model.pth`
-
-### 4. 评估模型
-
-```bash
-python eval.py
-```
-
-输出：
-- Top-1 / Top-3 准确率
-- 混淆矩阵图
-- 各类别 Precision / Recall / F1
-- 最易混淆的类别对 Top-5
-
-### 5. 单张图片推理
-
-```bash
-# 命令模式
-python inference.py path/to/leaf.jpg
-
-# 交互模式（直接回车）
-python inference.py
-
-# 保存预测结果图
-python inference.py path/to/leaf.jpg --save
-```
-
-## 📊 数据集说明
-
-| 作物 | 类别数 | 图片数 | 主要特点 |
-|------|:--:|--------|------|
-| 玉米 Corn | 4 | 3,852 | 灰叶斑病仅 513 张，存在不均衡 |
-| 马铃薯 Potato | 3 | 2,152 | 健康类仅 152 张，严重不均衡 |
-| 水稻 Rice | 4 | 4,078 | 多数据源合并，光照背景不一致 |
-| 小麦 Wheat | 3 | 2,942 | 类别较均衡 |
-| 甘蔗 Sugarcane | 3 | 300 | 每类仅 100 张，小样本挑战 |
-| **合计** | **17** | **13,324** | |
-
-## 🔧 技术栈
-
-| 技术 | 用途 |
+| 模块 | 功能 |
 |------|------|
-| PyTorch / torchvision | 模型构建、训练、推理 |
-| ResNet18/50 | backbone 网络（ImageNet 预训练） |
-| OpenCV / PIL | 图像读取与预处理 |
-| scikit-learn | 混淆矩阵、分类报告 |
-| Matplotlib / Seaborn | 训练曲线、数据可视化 |
-| tqdm | 训练进度条 |
+| 🌿 **病害诊断** | 拍照/上传 → ResNet18 识别 39 种病害 → 严重度 → 防治建议 → 热力图 |
+| ✍️ **博客** | Markdown 写文章、分类、匿名评论、20 张随机封面 |
+| 🎵 **音乐** | 网易云歌单 + 本地 13 首歌、歌词滚动、频谱跳动 |
+| 👤 **用户** | 注册登录、JWT、7天免登录、个人中心 |
+| 💬 **留言板** | 公共留言、可删自己的 |
+| 🐱 **月薪喵** | Python 终端动画 (ttyd) |
+| 🛡️ **管理员** | 杜越可管理所有文章 |
+| 📊 **历史** | 诊断记录、Excel 导出 |
 
+## 🏗️ 技术栈
 
+| 层 | 技术 |
+|---|------|
+| 前端 | Vue 3 + Vuetify 3 + Vite |
+| 后端 | FastAPI + SQLAlchemy + SQLite |
+| 模型 | PyTorch ResNet18 (ONNX 加速) |
+| 部署 | Nginx + Ubuntu 22.04 腾讯云 Lighthouse |
 
-## 📄 License
+## 📁 项目结构
 
-MIT License
+```
+crop-disease-diagnosis/
+├── server/                    # FastAPI 后端
+│   ├── main.py                # 入口
+│   ├── config.py              # 配置
+│   ├── database.py            # SQLite
+│   ├── models/db_models.py    # ORM
+│   ├── schemas/schemas.py     # Pydantic
+│   ├── routers/               # API 路由
+│   │   ├── auth.py            # 认证
+│   │   ├── predict.py         # 诊断
+│   │   ├── blog.py            # 博客
+│   │   ├── feedback.py        # 反馈
+│   │   ├── guestbook.py       # 留言板
+│   │   └── export.py          # 导出
+│   ├── services/              # 业务层
+│   │   ├── auth_service.py    # JWT
+│   │   └── predict_service.py # 推理
+│   └── utils/                 # 工具
+│       ├── grad_cam.py        # 热力图
+│       └── severity.py        # 严重度
+│
+├── frontend/components/disease/  # Vue 诊断组件
+├── models/                    # 模型定义
+├── config/                    # 训练配置
+├── data/                      # 数据集
+├── utils/                     # 训练工具
+├── weights/                   # 模型权重(不上传)
+├── train.py                   # 训练脚本
+├── eval.py                    # 评估
+├── admin.py                   # 管理工具
+└── docker-compose.yml         # Docker
+```
+
+## 🚀 快速启动
+
+```bash
+# 后端
+pip install fastapi uvicorn sqlalchemy python-jose passlib python-multipart openpyxl pillow onnxruntime torch torchvision
+cd crop-disease-diagnosis
+python -m server.main
+
+# 前端 (另一个仓库 leleo-home-page)
+cd leleo-home-page
+npm install && npx vite --host 0.0.0.0
+```
+
+## 🛠️ 管理员
+
+```bash
+python admin.py users        # 查看用户
+python admin.py reset 用户名 密码  # 重置密码
+```
+
+## 📊 模型
+
+| 指标 | 数值 |
+|------|------|
+| 模型 | ResNet18 |
+| 类别 | 39 种 |
+| 准确率 | 99.4% |
+| 推理 | ~60ms (ONNX CPU) |
+
+## 🌐 在线地址
+
+http://119.91.113.191
+
+## 📝 License
+
+MIT

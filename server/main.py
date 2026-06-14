@@ -22,7 +22,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import init_db
-from .routers import auth, predict, feedback, export as export_router, guestbook
+from .routers import auth, predict, feedback, export as export_router, guestbook, blog
 from .config import CORS_ORIGINS
 
 
@@ -31,6 +31,11 @@ async def lifespan(app: FastAPI):
     """应用生命周期"""
     init_db()
     print(" [OK] 数据库初始化完成")
+    # 预加载模型（第一次诊断不用等）
+    try:
+        from .services.predict_service import load_model
+        load_model()
+    except: pass
     print(" [OK] API 文档: http://localhost:8000/docs")
     yield
 
@@ -76,6 +81,7 @@ app.include_router(predict.router)
 app.include_router(feedback.router)
 app.include_router(export_router.router)
 app.include_router(guestbook.router)
+app.include_router(blog.router)
 
 
 @app.get("/")

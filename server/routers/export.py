@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 
+from urllib.parse import quote
+
 from ..database import get_db
 from ..models.db_models import User
 from ..services.auth_service import get_current_user
@@ -103,11 +105,11 @@ def export_excel(
     if len(user.diagnoses) == 0:
         raise HTTPException(404, "暂无诊断记录")
     buf = generate_excel(user, db)
-    filename = f"叶片病害诊断记录_{user.username}.xlsx"
+    filename = f"diagnosis_{user.username}.xlsx"
     return StreamingResponse(
         buf,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename={filename}"},
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(filename)}"},
     )
 
 
