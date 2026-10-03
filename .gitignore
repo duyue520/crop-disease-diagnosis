@@ -1,37 +1,58 @@
-# Python
-__pycache__/
-*.py[cod]
-*.so
-
-# 模型权重 (太大)
-weights/*.pth
-weights/*.pt
-weights/hub/
-
-# 数据库
-server/app.db
-*.db
-
-# IDE
-.idea/
+# ===== 编辑器 / 系统 =====
 .vscode/
+.idea/
 *.swp
-
-# 环境
-venv/
-.venv/
-
-# 系统
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# 临时文件
+# ===== Python =====
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# ===== 依赖与构建 =====
+node_modules/
+dist/
+build/
+.cache/
+
+# ===== 环境变量与密钥（重要：绝不提交）=====
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+
+# ===== 运行时产物 =====
 *.log
 *.tmp
-cloudflared.exe
-dist/
-node_modules/
+*.pid
+app.db
+*.sqlite
+*.sqlite3
 
-# 数据集
+# ===== 模型权重（.pth 训练产物不入库；.onnx 推理权重按需保留）=====
+*.pth
+*.pt
+!weights/*.onnx
+
+# ===== AI 助手本地配置（含本机路径/服务器地址，禁止提交）=====
+.claude/
+
+# ===== 数据集（体积大，不入库）=====
 Plant_leave_diseases_dataset_without_augmentation/
+data/raw/
+data/processed/
+
+# ===== 其它 =====
+cloudflared.exe
+*.zip
+*.tar.gz

@@ -69,6 +69,6 @@ subprocess.run(["npx", "vite", "build"], shell=True)
 
 # 3. 部署
 print("🚀 部署到腾讯云...")
-subprocess.run(f'echo | npx tcb hosting deploy dist/ -e duyue-d4gw2qp01d8a7bd6e', shell=True)
+subprocess.run(f'echo | npx tcb hosting deploy dist/ -e YOUR-CLOUDBASE-ENV-ID', shell=True)
 
-print(f"\n🎉 完成！https://duyue-d4gw2qp01d8a7bd6e-1433783466.tcloudbaseapp.com")
+print(f"\n🎉 完成！https://YOUR-CLOUDBASE-ENV-ID-1433783466.tcloudbaseapp.com")

@@ -7,7 +7,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(BASE_DIR)
 
 # 数据库
-DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}"
+DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}")
 
 # JWT
 SECRET_KEY = os.environ.get("SECRET_KEY", "crop-disease-secret-key-change-in-production")
@@ -15,7 +15,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 天
 
 # 模型
-MODEL_PATH = os.path.join(PROJECT_DIR, "weights", "best_model.pth")
+MODEL_PATH = os.environ.get("MODEL_PATH", os.path.join(PROJECT_DIR, "weights", "best_model.pth"))
 NUM_CLASSES = 39
 IMAGE_SIZE = 224
 MODEL_NAME = "resnet18"
@@ -25,7 +25,8 @@ MAX_UPLOAD_SIZE = 10 * 1024 * 1024  # 10MB
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp", "bmp"}
 
 # CORS
-CORS_ORIGINS = ["*"]
+CORS_ORIGINS = [o.strip() for o in os.environ.get("CORS_ORIGINS", "*").split(",") if o.strip()]
+MAX_UPLOAD_MB = int(os.environ.get("MAX_UPLOAD_MB", "10"))
 
 # 防治建议库
 DISEASE_ADVICE = {
